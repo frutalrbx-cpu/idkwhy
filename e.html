@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="green">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblox Revival Directory</title>
+    <style>
+        :root[data-theme="green"] {
+            --bg-color: #06130b; --card-bg: #0b2416; --text-main: #22c55e;
+            --text-muted: #4ade80; --border-style: 1px solid #166534; --link: #86efac;
+        }
+        :root[data-theme="dark"] {
+            --bg-color: #0f172a; --card-bg: #1e293b; --text-main: #f8fafc;
+            --text-muted: #94a3b8; --border-style: 1px solid #334155; --link: #60a5fa;
+        }
+        :root[data-theme="light"] {
+            --bg-color: #f8fafc; --card-bg: #ffffff; --text-main: #0f172a;
+            --text-muted: #475569; --border-style: 1px solid #cbd5e1; --link: #2563eb;
+        }
+        body { font-family: sans-serif; background: var(--bg-color); color: var(--text-main); padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        header { text-align: center; margin-bottom: 30px; }
+        .theme-select { background: var(--card-bg); color: var(--text-main); padding: 5px; border: 1px solid var(--text-muted); cursor: pointer; }
+        .category { margin-top: 30px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; margin-top: 10px; }
+        .card { background: var(--card-bg); padding: 15px; border-radius: 6px; border: var(--border-style); }
+        .card-header { display: flex; justify-content: space-between; font-weight: bold; }
+        .card-body { font-size: 0.9rem; color: var(--text-muted); margin-top: 5px; word-break: break-all; }
+        a { color: var(--link); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        
+        /* Keeps our raw data storage hidden from the webpage layout */
+        #listDataStore { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Roblox Revival Directory</h1>
+        <select class="theme-select" onchange="document.documentElement.setAttribute('data-theme', this.value)">
+            <option value="green">Matrix Green</option>
+            <option value="dark">Classic Dark</option>
+            <option value="light">Clean Light</option>
+        </select>
+    </header>
+
+    <!-- Main site container where parsed data drops -->
+    <div id="content">Parsing directory database...</div>
+</div>
+
+<!-- PASTE YOUR LIST DATA DIRECTLY INSIDE THIS BLOCK BELOW -->
+<pre id="listDataStore">
+# ALLIVE / PUBLIC
+luigiblox | 2008 | u need its dc server
+austiblox | 2010 to 2014 | https://austiblox.net
+bloxxia | 2017 to 2020 | https://bloxxia.de
+
+# ALLIVE / PRIVATE
+idk | - | empty slot
+
+# DED / PUBLIC
+backto04 | 2004 | its in godoblocks dc server
+04blox | 2004 | no client , website is dead
+roboblocks | 2005 | DONT
+godoblocks | 2005 | https://godoblocks.neocities.org/
+ovenblox | 2006 | idk
+torcade | 2007 | idk
+RBXACER | 2008 | idk , acer laptop reference
+goodblos | 2009 | idk
+alienium jupiter | 2010 to 2013 | idk
+octagon | 2013 - 2015 | idk
+rblx2016 | 2016 | idk
+meteorite | 2016-2020 | idk lol
+
+# LAUNCHER / PUBLIC
+lilium | 2006 to 2007 | idk , google drive
+novetus | 2006 - 2012 | https://bitl.itch.io/novetus [ snapshot up to 2017 ]
+orrh | 2007 to 2013 | wth is orrh [ itch io ]
+
+# SIMULATOR / PUBLIC
+rblx04 | 2004 - late 2005 | idk
+fwm | 2005 - 2008 | idk
+retrostudio | 2009-2015 | omg no
+</pre>
+
+<script>
+    // Reads text locally directly out of the hidden tag block
+    const rawText = document.getElementById('listDataStore').textContent;
+    const container = document.getElementById('content');
+    container.innerHTML = ''; 
+
+    let currentGrid = null;
+    const lines = rawText.split('\n');
+
+    lines.forEach(line => {
+        line = line.trim();
+        if (!line) return;
+
+        if (line.startsWith('#')) {
+            const catSection = document.createElement('div');
+            catSection.className = 'category';
+            
+            const heading = document.createElement('h2');
+            heading.textContent = line.replace('#', '').trim();
+            catSection.appendChild(heading);
+
+            currentGrid = document.createElement('div');
+            currentGrid.className = 'grid';
+            catSection.appendChild(currentGrid);
+            
+            container.appendChild(catSection);
+        } 
+        else if (currentGrid && line.includes('|')) {
+            const [name, year, desc] = line.split('|').map(s => s.trim());
+            const card = document.createElement('div');
+            card.className = 'card';
+            
+            let formattedDesc = desc;
+            if (desc.includes('http')) {
+                const urlMatch = desc.match(/https?:\/\/[^\s]+/g);
+                if (urlMatch) {
+                    urlMatch.forEach(url => {
+                        formattedDesc = formattedDesc.replace(url, `<a href="${url}" target="_blank">${url}</a>`);
+                    });
+                }
+            }
+
+            card.innerHTML = `
+                <div class="card-header"><span>${name}</span><span>${year}</span></div>
+                <div class="card-body">${formattedDesc}</div>
+            `;
+            currentGrid.appendChild(card);
+        }
+    });
+</script>
+</body>
+</html>
+
